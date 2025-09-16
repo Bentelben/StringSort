@@ -1,6 +1,7 @@
 #include "text_reader.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 
@@ -8,9 +9,9 @@ int compare(void const *a, void const *b) {
     return strcmp(*(char const **)a, *(char const **)b);
 }
 
-int compare(void const *a, void const *b) {
-    return 
-}
+//int compare(void const *a, void const *b) {
+//    return 
+//}
 
 
 int main() {
