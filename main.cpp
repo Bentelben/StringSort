@@ -5,20 +5,23 @@
 #include <assert.h>
 #include <string.h>
 
+#include <locale.h>
+#include <wchar.h>
+
 int compare(void const *a, void const *b);
 int compareBackwards(void const *a, void const *b);
 
 
 int compare(void const *a, void const *b) {
-    return strcmp(*(char const *const *)a, *(char const *const *)b);
+    return wcscmp(*(wchar_t const *const *)a, *(wchar_t const *const *)b);
 }
 
 int compareBackwards(void const *a, void const *b) {
-    char const *const str1 = *(char const *const *)a;
-    char const *const str2 = *(char const *const *)b;
+    wchar_t const *const str1 = *(wchar_t const *const *)a;
+    wchar_t const *const str2 = *(wchar_t const *const *)b;
 
-    size_t const str1_len = strlen(str1);
-    size_t const str2_len = strlen(str2);
+    size_t const str1_len = wcslen(str1);
+    size_t const str2_len = wcslen(str2);
 
     for (size_t i = 1; i <= str1_len && i <= str2_len; i++) {
         if (str1[str1_len - i] < str2[str2_len - i])
@@ -39,19 +42,22 @@ int compareBackwards(void const *a, void const *b) {
 
 
 int main() {
-    FILE *file = fopen("text.txt", "r");
+    setlocale(LC_ALL, "");
+    FILE *file = fopen("output.txt", "r");
     
     size_t line_count = 0;
-    char *text = ReadFile(file, &line_count);
+    wchar_t *text = ReadFile(file, &line_count);
+    assert(text);
     fclose(file);
 
-    char **const lines = GetLineArray(text, line_count);
+    wchar_t **const lines = GetLineArray(text, line_count);
+    assert(lines);
+    printf("line_count = %zu\n", line_count);
 
     qsort(lines, line_count, sizeof(*lines), compareBackwards);
 
-
     for (size_t i = 0; i < line_count; i++) {
-        printf("`%s`\n", lines[i]);
+        printf("`%ls`\n", lines[i]);
     }
 
     free(lines);
