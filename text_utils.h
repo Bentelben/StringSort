@@ -1,5 +1,5 @@
-#ifndef TEXT_READER_H
-#define TEXT_READER_H
+#ifndef TEXT_UTILS_H
+#define TEXT_UTILS_H
 
 #include <stdio.h>
 

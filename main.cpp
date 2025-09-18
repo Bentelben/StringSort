@@ -1,4 +1,4 @@
-#include "text_reader.h"
+#include "text_utils.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -65,7 +65,7 @@ int ReverseCompare(line_t const line1, line_t const line2) {
 }
 
 int main() {
-    char const *filename = "output.txt";
+    char const *filename = "input.txt";
     
     size_t text_size = 0;
     char *text = ReadFile(filename, &text_size);
