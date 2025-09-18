@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <wchar.h>
 
-char *ReadFile(FILE *const file, size_t *line_count);
-char **GetLineArray(char *text, size_t line_count);
+char *ReadFile(char const *file, size_t *text_size);
+char **GetLineArray(char *text, size_t *line_count);
 
 #endif

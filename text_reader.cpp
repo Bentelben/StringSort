@@ -5,63 +5,58 @@
 #include <assert.h>
 #include <string.h>
 
-char *ReadFile(FILE *const file, size_t *const line_count) {
-    assert(file);
+#include <sys/stat.h>
 
-    size_t const BUFFER_SIZE = 256;
+char *ReadFile(char const *const filename, size_t *const text_size) {
+    assert(filename);
+    assert(text_size);
 
-    *line_count = 0;
-    size_t text_size = BUFFER_SIZE;
-    char *text = (char *)calloc(text_size, sizeof(*text));
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+        return NULL;
+
+    struct stat file_stat = {};
+    if (stat(filename, &file_stat) == -1)
+        return NULL;
+
+    size_t file_size = (size_t)file_stat.st_size;
+    printf("file_size = %zu\n", file_size);
+
+    char *text = (char *)calloc(file_size + 1, sizeof(*text));
     if (text == NULL)
         return NULL;
 
-    int c = 0;
-    size_t i = 0;
-    do {
-        if (i >= text_size) {
-            //text_size += BUFFER_SIZE;
-            text_size *= 2;
-            text = (char *)realloc(text, text_size*sizeof(*text));
-            if (text == NULL)
-                return NULL;
-        }
+    *text_size = fread(text, sizeof(*text), file_size, file);
+    text[*text_size] = '\0';
 
-        c = fgetc(file);
+    printf("text_size = %zu\n", *text_size);
 
-        if (c == '\n' || c == EOF) {
-            if (i >= 1 && text[i-1] == '\0')
-                continue;
-
-            text[i] = '\0';
-            (*line_count)++;
-        } else {
-            text[i] = (char)c;
-        }
-
-        i++;
-    } while(c != EOF);
-
-    text = (char *)realloc(text, i*sizeof(*text));
+    fclose(file);
     return text;
 }
 
-char **GetLineArray(char *text, size_t const line_count) {
+char **GetLineArray(char *const text, size_t *const line_count) {
     assert(text);
-    assert(line_count != 0);
 
-    char **lines = (char **)calloc(line_count, sizeof(*lines));
+    *line_count = 0;
+    char *iterator = text;
+    while (1) {
+        *line_count += 1;
+        iterator = strchr(iterator + 1, '\n');
+        if (iterator == NULL)
+            break;
+        *iterator = '\0';
+    }
+
+    char **lines = (char **)calloc(*line_count, sizeof(*lines));
     if (lines == NULL)
         return NULL;
 
-    for (size_t i = 0; i < line_count; i++) {
-        lines[i] = text;
-        text += strlen(text) + 1;
+    lines[0] = text;
+    for (size_t i = 1; i < *line_count; i++) {
+        lines[i] = strchr(lines[i-1], '\0') + 1;
     }
-
     return lines;
 }
-
-
 
 
