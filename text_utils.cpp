@@ -59,6 +59,8 @@ line_t *GetLineArray(char *const text, size_t *const line_count) {
     }
     lines[*line_count-1].length = strlen(lines[*line_count-1].str);
     
+    if (lines[*line_count - 1].length == 0)
+        (*line_count)--;
 
     return lines;
 }
