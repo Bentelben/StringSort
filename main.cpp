@@ -7,16 +7,9 @@
 #include <string.h>
 
 
-int Compare(void const *ptr1, void const *ptr2);
 int CompareSymbols(int c1, int c2);
-int AlphabetCompare(line_t const line1, line_t const line2);
-int ReverseCompare(line_t const line1, line_t const line2);
-
-int Compare(void const *ptr1, void const *ptr2) {
-    line_t const line1 = *(line_t const *)ptr1;
-    line_t const line2 = *(line_t const *)ptr2;
-    return ReverseCompare(line1, line2);
-}
+int AlphabetCompare(void const *ptr1, void const *ptr2);
+int ReverseCompare(void const *ptr1, void const *ptr2);
 
 int CompareSymbols(int c1, int c2) {
     c1 = tolower(c1);
@@ -28,7 +21,10 @@ int CompareSymbols(int c1, int c2) {
     return 0;
 }
 
-int AlphabetCompare(line_t const line1, line_t const line2) {
+int AlphabetCompare(void const *ptr1, void const *ptr2) {
+    line_t const line1 = *(line_t const *)ptr1;
+    line_t const line2 = *(line_t const *)ptr2;
+
     size_t i1 = 0, i2 = 0;
     while (i1 < line1.length && i2 < line2.length) {
         if (!isalpha(line1.str[i1]))
@@ -46,7 +42,10 @@ int AlphabetCompare(line_t const line1, line_t const line2) {
     return CompareSymbols(line1.str[i1], line2.str[i2]);
 }
 
-int ReverseCompare(line_t const line1, line_t const line2) {
+int ReverseCompare(void const *ptr1, void const *ptr2) {
+    line_t const line1 = *(line_t const *)ptr1;
+    line_t const line2 = *(line_t const *)ptr2;
+
     size_t i1 = line1.length, i2 = line2.length;
     while (i1 >= 1 && i2 >= 1) {
         if (!isalpha(line1.str[i1]))
@@ -65,23 +64,34 @@ int ReverseCompare(line_t const line1, line_t const line2) {
 }
 
 int main() {
-    char const *filename = "input.txt";
+    char const *inputFileName = "input.txt";
+    char const *outputFileName = "output.txt";
     
+    FILE *outputFile = fopen(outputFileName, "w");
+    assert(outputFile);
+
     size_t text_size = 0;
-    char *text = ReadFile(filename, &text_size);
-    assert(text);
+    char *text = ReadFile(inputFileName, &text_size);
+    assert(text); // TODO
 
     size_t line_count = 0;
     line_t *const lines = GetLineArray(text, &line_count);
     assert(lines);
 
-    qsort(lines, line_count, sizeof(*lines), Compare);
+    
+    qsort(lines, line_count, sizeof(*lines), AlphabetCompare);
+    FPrintLineArray(outputFile, lines, line_count);
 
-    //printf("line_count = %zu\n", line_count);
-    for (size_t i = 0; i < line_count; i++) {
-        printf("%zu `%.*s`\n", i, (int)lines[i].length, lines[i].str);
-    }
+    fprintf(outputFile, "\n\n");
 
+    qsort(lines, line_count, sizeof(*lines), ReverseCompare);
+    FPrintLineArray(outputFile, lines, line_count);
+
+    fprintf(outputFile, "\n\n");
+
+    fprintf(outputFile, "%s", text);
+
+    fclose(outputFile);
     free(text);
     free(lines);
 }

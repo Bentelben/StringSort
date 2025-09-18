@@ -63,4 +63,11 @@ line_t *GetLineArray(char *const text, size_t *const line_count) {
     return lines;
 }
 
+void FPrintLineArray(FILE *file, const line_t *const lines, size_t const line_count) {
+    for (size_t i = 0; i < line_count; i++)
+        fprintf(file, "%zu `%.*s`\n", i, (int)lines[i].length, lines[i].str);
+}
 
+void PrintLineArray(const line_t *const lines, size_t const line_count) {
+    FPrintLineArray(stdout, lines, line_count);
+}
