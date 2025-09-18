@@ -1,4 +1,5 @@
 #include "text_utils.h"
+#include "sort.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -79,12 +80,12 @@ int main() {
     assert(lines);
 
     
-    qsort(lines, line_count, sizeof(*lines), AlphabetCompare);
+    BubbleSort(lines, line_count, sizeof(*lines), AlphabetCompare);
     FPrintLineArray(outputFile, lines, line_count);
 
     fprintf(outputFile, "\n\n");
 
-    qsort(lines, line_count, sizeof(*lines), ReverseCompare);
+    BubbleSort(lines, line_count, sizeof(*lines), ReverseCompare);
     FPrintLineArray(outputFile, lines, line_count);
 
     fprintf(outputFile, "\n\n");
