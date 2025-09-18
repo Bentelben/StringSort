@@ -2,9 +2,13 @@
 #define TEXT_READER_H
 
 #include <stdio.h>
-#include <wchar.h>
+
+typedef struct _line_t {
+    char *str;
+    size_t length;
+} line_t;
 
 char *ReadFile(char const *file, size_t *text_size);
-char **GetLineArray(char *text, size_t *line_count);
+line_t *GetLineArray(char *text, size_t *line_count);
 
 #endif

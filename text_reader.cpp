@@ -20,7 +20,7 @@ char *ReadFile(char const *const filename, size_t *const text_size) {
         return NULL;
 
     size_t file_size = (size_t)file_stat.st_size;
-    printf("file_size = %zu\n", file_size);
+    //printf("file_size = %zu\n", file_size);
 
     char *text = (char *)calloc(file_size + 1, sizeof(*text));
     if (text == NULL)
@@ -29,13 +29,13 @@ char *ReadFile(char const *const filename, size_t *const text_size) {
     *text_size = fread(text, sizeof(*text), file_size, file);
     text[*text_size] = '\0';
 
-    printf("text_size = %zu\n", *text_size);
+    //printf("text_size = %zu\n", *text_size);
 
     fclose(file);
     return text;
 }
 
-char **GetLineArray(char *const text, size_t *const line_count) {
+line_t *GetLineArray(char *const text, size_t *const line_count) {
     assert(text);
 
     *line_count = 0;
@@ -45,17 +45,21 @@ char **GetLineArray(char *const text, size_t *const line_count) {
         iterator = strchr(iterator + 1, '\n');
         if (iterator == NULL)
             break;
-        *iterator = '\0';
     }
 
-    char **lines = (char **)calloc(*line_count, sizeof(*lines));
+    line_t *lines = (line_t *)calloc(*line_count, sizeof(*lines));
     if (lines == NULL)
         return NULL;
 
-    lines[0] = text;
+    lines[0].str = text;
     for (size_t i = 1; i < *line_count; i++) {
-        lines[i] = strchr(lines[i-1], '\0') + 1;
+        lines[i].str = strchr(lines[i-1].str, '\n') + 1;
+        lines[i-1].length = (size_t)(lines[i].str - lines[i-1].str - 1);
+        //printf("%zu\n", lines[i-1].length);
     }
+    lines[*line_count-1].length = strlen(lines[*line_count-1].str);
+    
+
     return lines;
 }
 
