@@ -27,8 +27,8 @@ void BubbleSort(void *const array, size_t const n, size_t const size, comparator
 
     for (size_t i = n-1; i >= 1; i--) {
         for (size_t j = 0; j < i; j++) {
-            void *const elem_ptr = MOVEPTR(array, i, size);
-            void *const next_elem_ptr = MOVEPTR(array, i + 1, size);
+            void *const elem_ptr = MOVEPTR(array, j, size);
+            void *const next_elem_ptr = MOVEPTR(array, j + 1, size);
             
             if (compare( elem_ptr, next_elem_ptr) == 1)
                 MySwap(elem_ptr, next_elem_ptr, size); 
@@ -38,8 +38,9 @@ void BubbleSort(void *const array, size_t const n, size_t const size, comparator
 
 
 static inline void *QuickSortSelectMiddle(void *const array, size_t const n, size_t const size) {
-    srand((unsigned int)time(NULL));
-    size_t middle_index = (size_t)rand() % n;
+    //srand((unsigned int)time(NULL));
+    //size_t middle_index = (size_t)rand() % n;
+    size_t middle_index = n / 2;
     return MOVEPTR(array, middle_index, size);
 }
 
