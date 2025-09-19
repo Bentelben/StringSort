@@ -62,7 +62,7 @@ line_t *GetLineArray(char *const text, size_t *const line_count) {
 }
 
 void FPrintLine(FILE *const file, line_t const line) {
-    fprintf(file, "`%*s`\n", (int)line.length, line.str);
+    fprintf(file, "`%.*s`\n", (int)line.length, line.str);
 }
 
 void PrintLine(line_t const line) {
