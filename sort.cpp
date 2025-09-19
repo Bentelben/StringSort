@@ -19,7 +19,7 @@ static void MySwap(void *const ptr1, void *const ptr2, size_t size) {
     free(tmp);
 }
 
-void BubbleSort(void *const array, size_t const n, size_t const size, int (*compare)(void const *, void const *)) {
+void BubbleSort(void *const array, size_t const n, size_t const size, comparator_t const compare) {
     for (size_t i = n-1; i >= 1; i--) {
         for (size_t j = 0; j < i; j++) {
             void *const elem_ptr = MOVEPTR(array, i, size);
@@ -31,8 +31,7 @@ void BubbleSort(void *const array, size_t const n, size_t const size, int (*comp
     }
 }
 
-
-static size_t QuickSortPartition(void *middle, void *const array, size_t const n, size_t const size, int (*compare)(void const *, void const *)) {
+static size_t QuickSortPartition(void *middle, void *const array, size_t const n, size_t const size, comparator_t const compare) {
     size_t i = 0;
     size_t j = n - 1;
 
@@ -64,6 +63,7 @@ static size_t QuickSortPartition(void *middle, void *const array, size_t const n
         else if (j_ptr == middle)
             middle = i_ptr;
         MySwap(i_ptr, j_ptr, size);
+
         i++;
         j--;
         
@@ -81,7 +81,7 @@ static size_t QuickSortPartition(void *middle, void *const array, size_t const n
     return i;
 }
 
-void QuickSort(void *array, size_t n, size_t const size, int (*compare)(void const *, void const *)) {
+void QuickSort(void *array, size_t n, size_t const size, comparator_t const compare) {
     assert(array);
     //fprintf(stderr, "n = %d\n", n);
 

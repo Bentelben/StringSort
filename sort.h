@@ -3,7 +3,9 @@
 
 #include <stdlib.h>
 
-void BubbleSort(void *const array, size_t const n, size_t const size, int (*compare)(void const *, void const *));
-void QuickSort(void *const array, size_t const n, size_t const size, int (*compare)(void const *, void const *));
+typedef int (*comparator_t)(void const *, void const *);
+
+void BubbleSort(void *const array, size_t const n, size_t const size, comparator_t const compare); 
+void QuickSort(void *const array, size_t const n, size_t const size, comparator_t const compare);
 
 #endif
