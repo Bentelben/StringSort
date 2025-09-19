@@ -81,7 +81,7 @@ static size_t QuickSortPartition(void *middle, void *const array, size_t const n
     return i;
 }
 
-void QuickSort(void *const array, size_t const n, size_t const size, int (*compare)(void const *, void const *)) {
+void QuickSort(void *array, size_t n, size_t const size, int (*compare)(void const *, void const *)) {
     assert(array);
     //fprintf(stderr, "n = %d\n", n);
 
@@ -120,9 +120,17 @@ void QuickSort(void *const array, size_t const n, size_t const size, int (*compa
 
         void *const right_array = MOVEPTR(array, p, size);
         size_t const right_n = n - p;
-        QuickSort(left_array, left_n, size, compare);
-        QuickSort(right_array, right_n, size, compare);
-        break;
+        if (left_n < right_n) {
+            QuickSort(left_array, left_n, size, compare);
+            
+            array = right_array;
+            n = right_n;
+        } else {
+            QuickSort(right_array, right_n, size, compare);
+
+            array = left_array;
+            n = left_n;
+        }
     }
 }
 
