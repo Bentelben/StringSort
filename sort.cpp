@@ -7,19 +7,30 @@
 
 #define MOVEPTR(array, i, size) ( (void *)((char *)(array) + (i)*(size)) )
 
-static void MySwap(void *const ptr1, void *const ptr2, size_t const size) {
-    assert(ptr1);
-    assert(ptr2);
 
-    void *const tmp = calloc(1, size);
-    if (tmp == NULL)
-        abort();
+static void MySwap(void *const vptr1, void *const vptr2, size_t const size) {
+    assert(vptr1);
+    assert(vptr2);
 
-    memcpy(tmp, ptr1, size);
-    memcpy(ptr1, ptr2, size);
-    memcpy(ptr2, tmp, size);
-    
-    free(tmp);
+    char *ptr1 = (char *)vptr1;
+    char *ptr2 = (char *)vptr2;
+
+    size_t i = size;
+#define DOSHIT(type)                    \
+    while (i >= sizeof(type)) {         \
+        type tmp = *(type *)ptr1;       \
+        *(type *)ptr1 = *(type *)ptr2;  \
+        *(type *)ptr2 = tmp;            \
+        ptr1 += sizeof(type);           \
+        ptr2 += sizeof(type);           \
+        i = i - sizeof(type);           \
+    }
+
+    DOSHIT(unsigned long long)
+    DOSHIT(unsigned int)
+    DOSHIT(unsigned short)
+    DOSHIT(char)
+#undef DOSHIT
 }
 
 void BubbleSort(void *const array, size_t const n, size_t const size, comparator_t const compare) {
