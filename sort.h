@@ -1,7 +1,7 @@
 #ifndef SORT_H
 #define SORT_H
 
-#include <stdlib.h>
+#include <stddef.h>
 
 typedef int (*comparator_t)(void const *, void const *);
 

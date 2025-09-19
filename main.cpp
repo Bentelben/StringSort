@@ -6,8 +6,6 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <string.h>
-
 
 int CompareSymbols(int c1, int c2);
 int AlphabetCompare(void const *ptr1, void const *ptr2);
@@ -23,7 +21,7 @@ int CompareSymbols(int c1, int c2) {
     return 0;
 }
 
-int AlphabetCompare(void const *ptr1, void const *ptr2) {
+int AlphabetCompare(void const *const ptr1, void const *const ptr2) {
     line_t const line1 = *(line_t const *)ptr1;
     line_t const line2 = *(line_t const *)ptr2;
 
@@ -42,7 +40,7 @@ int AlphabetCompare(void const *ptr1, void const *ptr2) {
     return CompareSymbols(line1.str[i1], line2.str[i2]);
 }
 
-int ReverseCompare(void const *ptr1, void const *ptr2) {
+int ReverseCompare(void const *const ptr1, void const *const ptr2) {
     line_t const line1 = *(line_t const *)ptr1;
     line_t const line2 = *(line_t const *)ptr2;
 
@@ -67,14 +65,14 @@ int ReverseCompare(void const *ptr1, void const *ptr2) {
 int main() {
     Test();
 
-    char const *inputFileName = "input.txt";
-    char const *outputFileName = "output.txt";
+    char const *const inputFileName = "input.txt";
+    char const *const outputFileName = "output.txt";
     
-    FILE *outputFile = fopen(outputFileName, "w");
+    FILE *const outputFile = fopen(outputFileName, "w");
     assert(outputFile);
 
     size_t text_size = 0;
-    char *text = ReadFile(inputFileName, &text_size);
+    char *const text = ReadFile(inputFileName, &text_size);
     assert(text); // TODO
 
     size_t line_count = 0;
@@ -82,13 +80,13 @@ int main() {
     assert(lines);
 
     
-    printf("sorting\n");
+    printf("sorting...\n");
     QuickSort(lines, line_count, sizeof(*lines), AlphabetCompare);
     FPrintLineArray(outputFile, lines, line_count);
 
     fprintf(outputFile, "\n\n");
 
-    printf("sorting\n");
+    printf("sorting...\n");
     QuickSort(lines, line_count, sizeof(*lines), ReverseCompare);
     FPrintLineArray(outputFile, lines, line_count);
 

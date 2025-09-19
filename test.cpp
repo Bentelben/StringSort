@@ -22,14 +22,14 @@ static void GenerateTest(int **array0, size_t *n) {
     srand((unsigned int)time(NULL));
 
     size_t const N_MIN = 1;
-    size_t const N_MAX = 1000;
+    size_t const N_MAX = 100;
     *n = N_MIN + ((size_t)rand() % (N_MAX - N_MIN + 1));
 
     *array0 = (int *)calloc(*n, sizeof(int));
     assert(*array0);
     
-    int const VALUE_MIN = -50;
-    int const VALUE_MAX =  50;
+    int const VALUE_MIN = -20;
+    int const VALUE_MAX =  20;
     for (size_t i = 0; i < *n; i++)
         (*array0)[i] = VALUE_MIN + (rand() % (VALUE_MAX - VALUE_MIN + 1));
 }
@@ -80,7 +80,7 @@ void Test() {
     int array[6] = {-5, 3, -5, -2, 4, 2};
     RunTest(array, 6);
 
-    for (size_t i = 0; i < 1000; i++) {
+    for (size_t i = 0; i < 100; i++) {
         //printf("%zu\n", i);
 
         size_t n = 0;

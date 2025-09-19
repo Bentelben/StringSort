@@ -20,7 +20,6 @@ char *ReadFile(char const *const filename, size_t *const text_size) {
         return NULL;
 
     size_t file_size = (size_t)file_stat.st_size;
-    //printf("file_size = %zu\n", file_size);
 
     char *text = (char *)calloc(file_size + 1, sizeof(*text));
     if (text == NULL)
@@ -28,8 +27,6 @@ char *ReadFile(char const *const filename, size_t *const text_size) {
 
     *text_size = fread(text, sizeof(*text), file_size, file);
     text[*text_size] = '\0';
-
-    //printf("text_size = %zu\n", *text_size);
 
     fclose(file);
     return text;
@@ -55,7 +52,6 @@ line_t *GetLineArray(char *const text, size_t *const line_count) {
     for (size_t i = 1; i < *line_count; i++) {
         lines[i].str = strchr(lines[i-1].str, '\n') + 1;
         lines[i-1].length = (size_t)(lines[i].str - lines[i-1].str - 1);
-        //printf("%zu\n", lines[i-1].length);
     }
     lines[*line_count-1].length = strlen(lines[*line_count-1].str);
     
@@ -65,11 +61,19 @@ line_t *GetLineArray(char *const text, size_t *const line_count) {
     return lines;
 }
 
-void FPrintLineArray(FILE *file, const line_t *const lines, size_t const line_count) {
-    for (size_t i = 0; i < line_count; i++)
-        fprintf(file, "%zu `%.*s`\n", i, (int)lines[i].length, lines[i].str);
+void FPrintLine(FILE *const file, line_t const line) {
+    fprintf(file, "`%*s`\n", (int)line.length, line.str);
 }
 
-void PrintLineArray(const line_t *const lines, size_t const line_count) {
+void PrintLine(line_t const line) {
+    FPrintLine(stdout, line);
+}
+
+void FPrintLineArray(FILE *const file, line_t const *const lines, size_t const line_count) {
+    for (size_t i = 0; i < line_count; i++)
+        FPrintLine(file, lines[i]);
+}
+
+void PrintLineArray(line_t const *const lines, size_t const line_count) {
     FPrintLineArray(stdout, lines, line_count);
 }

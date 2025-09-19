@@ -10,7 +10,11 @@ typedef struct _line_t {
 
 char *ReadFile(char const *file, size_t *text_size);
 line_t *GetLineArray(char *text, size_t *line_count);
-void FPrintLineArray(FILE *file, const line_t *const lines, size_t const line_count);
-void PrintLineArray(const line_t *const lines, size_t const line_count);
+
+void FPrintLine(FILE *file, line_t line);
+void PrintLine(line_t line);
+
+void FPrintLineArray(FILE *file, const line_t *lines, size_t line_count);
+void PrintLineArray(const line_t *lines, size_t line_count);
 
 #endif
