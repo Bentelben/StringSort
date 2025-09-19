@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <sys/time.h>
 
 static int compare(void const *ptr1, void const *ptr2) {
     int value1 = *(int const*)ptr1;
@@ -22,14 +23,14 @@ static void GenerateTest(int **array0, size_t *n) {
     srand((unsigned int)time(NULL));
 
     size_t const N_MIN = 1;
-    size_t const N_MAX = 100;
+    size_t const N_MAX = 1000;
     *n = N_MIN + ((size_t)rand() % (N_MAX - N_MIN + 1));
 
     *array0 = (int *)calloc(*n, sizeof(int));
     assert(*array0);
     
-    int const VALUE_MIN = -20;
-    int const VALUE_MAX =  20;
+    int const VALUE_MIN = -50;
+    int const VALUE_MAX =  50;
     for (size_t i = 0; i < *n; i++)
         (*array0)[i] = VALUE_MIN + (rand() % (VALUE_MAX - VALUE_MIN + 1));
 }
@@ -49,7 +50,7 @@ static void PrintTest(int const *const array0, int const *const array1, int cons
     PrintArr(array2, n);
 }
 
-static bool RunTest(int *const array0, size_t n) {
+static bool RunTest(int *const array0, size_t n, suseconds_t *qsort_time, suseconds_t *mysort_time) {
     int *const array1 = (int *)calloc(n, sizeof(int));
     int *const array2 = (int *)calloc(n, sizeof(int));
 
@@ -58,8 +59,16 @@ static bool RunTest(int *const array0, size_t n) {
         array2[i] = array0[i];
     }
 
-    qsort    (array1, n, sizeof(int), compare);
+    struct timeval start, stop;
+    gettimeofday(&start, NULL);
+    qsort(array1, n, sizeof(int), compare);
+    gettimeofday(&stop, NULL);
+    *qsort_time = stop.tv_usec - start.tv_usec + (stop.tv_sec - start.tv_sec)*1000000;
+
+    gettimeofday(&start, NULL);
     QuickSort(array2, n, sizeof(int), compare);
+    gettimeofday(&stop, NULL);
+    *mysort_time = stop.tv_usec - start.tv_usec + (stop.tv_sec - start.tv_sec)*1000000;
 
     for (size_t i = 0; i < n; i++) {
         if (array1[i] != array2[i]) {
@@ -77,16 +86,24 @@ static bool RunTest(int *const array0, size_t n) {
 void Test() {
     printf("testing...\n");
 
-    int array[6] = {-5, 3, -5, -2, 4, 2};
-    RunTest(array, 6);
+    size_t const TEST_COUNT = 100;
 
-    for (size_t i = 0; i < 100; i++) {
+    suseconds_t qsort_time = 0;
+    suseconds_t mysort_time = 0;
+
+    for (size_t i = 0; i < TEST_COUNT; i++) {
         //printf("%zu\n", i);
 
         size_t n = 0;
         int *array0 = NULL;
         GenerateTest(&array0, &n);
-        bool result = RunTest(array0, n);
+
+        suseconds_t qsort_deltatime = 0;
+        suseconds_t mysort_deltatime = 0;
+        bool result = RunTest(array0, n, &qsort_deltatime, &mysort_deltatime);
+        qsort_time += qsort_deltatime;
+        mysort_time += mysort_deltatime;
+
         free(array0);
         if (!result) {
             printf("\nERROR\n\n");
@@ -94,4 +111,7 @@ void Test() {
         }
     }
     printf("done testing\n");
+    printf("qsort time:  %lf\n", (double)qsort_time / TEST_COUNT);
+    printf("mysort time: %lf\n\n", (double)mysort_time / TEST_COUNT);
+
 }
