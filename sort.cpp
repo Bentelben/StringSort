@@ -4,9 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <stdint.h>
 
-#define MOVEPTR(array, i, size) ( (void *)((char *)(array) + (i)*(size)) )
-
+static void *ApplyIndex(void *const array, size_t const i, size_t size) {
+    return (char*)array + i*size;
+}
 
 static void MySwap(void *const vptr1, void *const vptr2, size_t const size) {
     assert(vptr1);
@@ -26,10 +28,10 @@ static void MySwap(void *const vptr1, void *const vptr2, size_t const size) {
         i = i - sizeof(type);           \
     }
 
-    DOSHIT(unsigned long long)
-    DOSHIT(unsigned int)
-    DOSHIT(unsigned short)
-    DOSHIT(char)
+    DOSHIT(uint64_t)
+    DOSHIT(uint32_t)
+    DOSHIT(uint16_t)
+    DOSHIT(uint8_t)
 #undef DOSHIT
 }
 
@@ -38,8 +40,8 @@ void BubbleSort(void *const array, size_t const n, size_t const size, comparator
 
     for (size_t i = n-1; i >= 1; i--) {
         for (size_t j = 0; j < i; j++) {
-            void *const elem_ptr = MOVEPTR(array, j, size);
-            void *const next_elem_ptr = MOVEPTR(array, j + 1, size);
+            void *const elem_ptr = ApplyIndex(array, j, size);
+            void *const next_elem_ptr = ApplyIndex(array, j + 1, size);
             
             if (compare( elem_ptr, next_elem_ptr) == 1)
                 MySwap(elem_ptr, next_elem_ptr, size); 
@@ -52,7 +54,7 @@ static inline void *QuickSortSelectMiddle(void *const array, size_t const n, siz
     //srand((unsigned int)time(NULL));
     //size_t middle_index = (size_t)rand() % n;
     size_t middle_index = n / 2;
-    return MOVEPTR(array, middle_index, size);
+    return ApplyIndex(array, middle_index, size);
 }
 
 static size_t QuickSortPartition(void *const array, size_t const n, size_t const size, comparator_t const compare) {
@@ -64,17 +66,17 @@ static size_t QuickSortPartition(void *const array, size_t const n, size_t const
     void *middle = QuickSortSelectMiddle(array, n, size);
 
     while (1) {
-        while (compare(MOVEPTR(array, i, size), middle) == -1)
+        while (compare(ApplyIndex(array, i, size), middle) == -1)
             i++;
 
-        while (compare(middle, MOVEPTR(array, j, size)) == -1)
+        while (compare(middle, ApplyIndex(array, j, size)) == -1)
             j--;
 
         if (i >= j)
             break;
         
-        void *const i_ptr = MOVEPTR(array, i, size);
-        void *const j_ptr = MOVEPTR(array, j, size);
+        void *const i_ptr = ApplyIndex(array, i, size);
+        void *const j_ptr = ApplyIndex(array, j, size);
 
         if (i_ptr == middle)
             middle = j_ptr;
@@ -97,8 +99,8 @@ void QuickSort(void *array, size_t n, size_t const size, comparator_t const comp
             return;
 
         if (n == 2) {
-            if (compare(array, MOVEPTR(array, 1, size)) == 1)
-                MySwap(array, MOVEPTR(array, 1, size), size);
+            if (compare(array, ApplyIndex(array, 1, size)) == 1)
+                MySwap(array, ApplyIndex(array, 1, size), size);
             return;
         }
 
@@ -108,7 +110,7 @@ void QuickSort(void *array, size_t n, size_t const size, comparator_t const comp
         void *const left_array = array;
         size_t const left_n = p;
 
-        void *const right_array = MOVEPTR(array, p, size);
+        void *const right_array = ApplyIndex(array, p, size);
         size_t const right_n = n - p;
 
         if (left_n < right_n) {
@@ -124,6 +126,3 @@ void QuickSort(void *array, size_t n, size_t const size, comparator_t const comp
         }
     }
 }
-
-
-#undef MOVEPTR

@@ -22,7 +22,7 @@ static int compare(void const *ptr1, void const *ptr2) {
 static void GenerateTest(int **array0, size_t *n) {
     srand((unsigned int)time(NULL));
 
-    size_t const N_MIN = 1;
+    size_t const N_MIN = 1000;
     size_t const N_MAX = 1000;
     *n = N_MIN + ((size_t)rand() % (N_MAX - N_MIN + 1));
 
@@ -86,7 +86,7 @@ static bool RunTest(int *const array0, size_t n, suseconds_t *qsort_time, suseco
 void Test() {
     printf("testing...\n");
 
-    size_t const TEST_COUNT = 100;
+    size_t const TEST_COUNT = 1000;
 
     suseconds_t qsort_time = 0;
     suseconds_t mysort_time = 0;
