@@ -85,37 +85,45 @@ void QuickSort(void *const array, size_t const n, size_t const size, int (*compa
     assert(array);
     //fprintf(stderr, "n = %d\n", n);
 
-    if (n <= 1)
-        return;
+    while (1) {
+        if (n <= 1)
+            return;
 
-    if (n == 2) {
-        if (compare(array, MOVEPTR(array, 1, size)) == 1)
-            MySwap(array, MOVEPTR(array, 1, size), size);
-        return;
+        if (n == 2) {
+            if (compare(array, MOVEPTR(array, 1, size)) == 1)
+                MySwap(array, MOVEPTR(array, 1, size), size);
+            return;
+        }
+
+        
+        void *middle = MOVEPTR(array, n/2, size);
+
+        //printf("m = %d\n", *(int*)middle);
+        //for (size_t i = 0; i < n; i++)
+        //    printf("%d ", *(int*)MOVEPTR(array, i, size));
+        //printf("\n");
+
+        size_t p = QuickSortPartition(middle, array, n, size, compare);
+        assert(p < n);
+
+        //for (size_t i = 0; i < n; i++)
+        //    printf("%d ", *(int*)MOVEPTR(array, i, size));
+        //printf("\n\n");
+        
+        //printf("n = %zu p = %zu\n", n, p);
+
+
+        // TODO optimize recursion with while
+
+        void *const left_array = array;
+        size_t const left_n = p;
+
+        void *const right_array = MOVEPTR(array, p, size);
+        size_t const right_n = n - p;
+        QuickSort(left_array, left_n, size, compare);
+        QuickSort(right_array, right_n, size, compare);
+        break;
     }
-
-    
-    void *middle = MOVEPTR(array, n/2, size);
-
-    //printf("m = %d\n", *(int*)middle);
-    //for (size_t i = 0; i < n; i++)
-    //    printf("%d ", *(int*)MOVEPTR(array, i, size));
-    //printf("\n");
-
-    size_t p = QuickSortPartition(middle, array, n, size, compare);
-
-    //for (size_t i = 0; i < n; i++)
-    //    printf("%d ", *(int*)MOVEPTR(array, i, size));
-    //printf("\n\n");
-    
-    if (p == 0) p = p + 1;
-    if (p == n) p = n - 1;
-    //printf("n = %zu p = %zu\n", n, p);
-
-
-    // TODO optimize recursion with while
-    QuickSort(array, p, size, compare);
-    QuickSort(MOVEPTR(array, p, size), n - p, size, compare);
 }
 
 
