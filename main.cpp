@@ -1,5 +1,6 @@
 #include "text_utils.h"
 #include "sort.h"
+#include "test.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -28,16 +29,14 @@ int AlphabetCompare(void const *ptr1, void const *ptr2) {
 
     size_t i1 = 0, i2 = 0;
     while (i1 < line1.length && i2 < line2.length) {
-        if (!isalpha(line1.str[i1]))
-            i1++;
-        else if (!isalpha(line2.str[i2])) 
-            i2++;
-        else if (CompareSymbols(line1.str[i1], line2.str[i2]) != 0)
+        while (i1 < line1.length && !isalpha(line1.str[i1])) i1++;
+        while (i2 < line2.length && !isalpha(line2.str[i2])) i2++;
+
+        if (CompareSymbols(line1.str[i1], line2.str[i2]) != 0)
             break;
-        else {
-            i1++;
-            i2++;
-        }
+
+        i1++;
+        i2++;
     }
 
     return CompareSymbols(line1.str[i1], line2.str[i2]);
@@ -48,14 +47,15 @@ int ReverseCompare(void const *ptr1, void const *ptr2) {
     line_t const line2 = *(line_t const *)ptr2;
 
     size_t i1 = line1.length, i2 = line2.length;
-    while (i1 >= 1 && i2 >= 1) {
-        if (!isalpha(line1.str[i1]))
-            i1--;
-        else if (!isalpha(line2.str[i2]))
-            i2--;
-        else if (CompareSymbols(line1.str[i1], line2.str[i2]) != 0)
+    while (1) {
+        while (i1 >= 1 && !isalpha(line1.str[i1])) i1--;
+        while (i2 >= 1 && !isalpha(line2.str[i2])) i2--;
+        
+        if (CompareSymbols(line1.str[i1], line2.str[i2]) != 0)
             break;
         else {
+            if (i1 == 0 || i2 == 0)
+                break;
             i1--;
             i2--;
         }
@@ -65,6 +65,8 @@ int ReverseCompare(void const *ptr1, void const *ptr2) {
 }
 
 int main() {
+    Test();
+
     char const *inputFileName = "input.txt";
     char const *outputFileName = "output.txt";
     
@@ -80,12 +82,14 @@ int main() {
     assert(lines);
 
     
-    BubbleSort(lines, line_count, sizeof(*lines), AlphabetCompare);
+    printf("sorting\n");
+    QuickSort(lines, line_count, sizeof(*lines), AlphabetCompare);
     FPrintLineArray(outputFile, lines, line_count);
 
     fprintf(outputFile, "\n\n");
 
-    BubbleSort(lines, line_count, sizeof(*lines), ReverseCompare);
+    printf("sorting\n");
+    QuickSort(lines, line_count, sizeof(*lines), ReverseCompare);
     FPrintLineArray(outputFile, lines, line_count);
 
     fprintf(outputFile, "\n\n");

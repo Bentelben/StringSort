@@ -8,7 +8,7 @@ OUT := a.out
 MAIN := main
 BUILD_DIR := build
 
-source_files := $(MAIN) text_utils sort
+source_files := $(MAIN) text_utils sort test
 
 $(OUT): $(source_files:%=$(BUILD_DIR)/%.o)
 	$(COMPILER) $(COMPILER_FLAGS) $^ -o $@
