@@ -34,59 +34,64 @@ static void GenerateTest(int **array0, size_t *n) {
         (*array0)[i] = VALUE_MIN + (rand() % (VALUE_MAX - VALUE_MIN + 1));
 }
 
-static bool RunTest(int *array0, int **array1, int **array2, size_t n) {
-    *array1 = (int *)calloc(n, sizeof(int));
-    *array2 = (int *)calloc(n, sizeof(int));
+static void PrintArr(int const *const array, size_t n) {
+    for (size_t i = 0; i < n; i++)
+        printf("%d ", array[i]);
+    printf("\n");
+}
+
+static void PrintTest(int const *const array0, int const *const array1, int const *const array2, size_t n) {
+    printf("ref\n");
+    PrintArr(array0, n);
+    printf("qsort\n");
+    PrintArr(array1, n);
+    printf("mysort\n");
+    PrintArr(array2, n);
+}
+
+static bool RunTest(int *const array0, size_t n) {
+    int *const array1 = (int *)calloc(n, sizeof(int));
+    int *const array2 = (int *)calloc(n, sizeof(int));
 
     for (size_t i = 0; i < n; i++) {
-        (*array1)[i] = array0[i];
-        (*array2)[i] = array0[i];
+        array1[i] = array0[i];
+        array2[i] = array0[i];
     }
 
-    qsort    (*array1, n, sizeof(int), compare);
-    QuickSort(*array2, n, sizeof(int), compare);
+    qsort    (array1, n, sizeof(int), compare);
+    QuickSort(array2, n, sizeof(int), compare);
 
     for (size_t i = 0; i < n; i++) {
-        if ((*array1)[i] != (*array2)[i]) {
+        if (array1[i] != array2[i]) {
+            PrintTest(array0, array1, array2, n);
+            free(array1);
+            free(array2);
             return false;
         }
     }
+    free(array1);
+    free(array2);
     return true;
 }
 
 void Test() {
+    printf("testing...\n");
+
+    int array[6] = {-5, 3, -5, -2, 4, 2};
+    RunTest(array, 6);
+
     for (size_t i = 0; i < 1000; i++) {
         //printf("%zu\n", i);
 
         size_t n = 0;
         int *array0 = NULL;
-        int *array1 = NULL;
-        int *array2 = NULL;
         GenerateTest(&array0, &n);
-    
-        if (!RunTest(array0, &array1, &array2, n)) {
+        bool result = RunTest(array0, n);
+        free(array0);
+        if (!result) {
             printf("\nERROR\n\n");
-            printf("Ref\n");
-            for (size_t j = 0; j < n; j++)
-                printf("%d ", array0[j]);
-
-            printf("\nqsort\n");
-            for (size_t j = 0; j < n; j++)
-                printf("%d ", array1[j]);
-
-            printf("\nmysort\n");
-            for (size_t j = 0; j < n; j++)
-                printf("%d ", array2[j]);
-            printf("\n");
-
-            free(array0);
-            free(array1);
-            free(array2);
             return;
         }
-
-        free(array0);
-        free(array1);
-        free(array2);
     }
+    printf("done testing\n");
 }
